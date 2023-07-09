@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: API-GATEWAY
+    gateway:
+      routes:
+        - id: EXAMPLE-APP
+          uri: lb://EXAMPLE-APP
+          predicates:
+            - Path=/api/example/**
+          filters:
+            - RewritePath=/api/example/(?<path>.*), /$\{path}
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
+
+logging.level.com.netflix: DEBUG
+
+server:
+  port: 8080
+
+management:
+  health:
+    redis:
+      enabled: true
